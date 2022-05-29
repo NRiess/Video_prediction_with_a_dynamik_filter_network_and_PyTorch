@@ -48,6 +48,4 @@ and update the paths in the datasets/dataset_highwayDriving.py to point to them.
 ## Training
 
 Training can be started by running main_pytorch.py.
-You can choose the number of frames considered for training with ```--num_of_train_frames```. 
-
-Set ```--num_of_train_frames=15693``` to consider the whole training set.
+You can choose the number of frames considered for training with ```--num_of_train_frames```. Please set ```--num_of_train_frames=15693``` to consider the whole training set.
