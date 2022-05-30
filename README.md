@@ -30,8 +30,8 @@ In this repository the Highway driving dataset is used.
 
 ## Create environment
 
-The code has been tested with Anaconda (Python 3.7.12), PyTorch 1.10.0 and CUDA 
-11.4 (Different Pytorch + CUDA version is also compatible).  
+The code has been tested with Anaconda (Python 3.7.12), PyTorch 1.7.0 and CUDA 
+11.4 (Different Pytorch + CUDA version is also compatible) on Ubuntu 20.04.  
 Please run the provided conda environment setup file:
 
   ```Shell

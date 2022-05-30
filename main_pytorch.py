@@ -26,7 +26,7 @@ options = {
 
     # training parameters
     'image_dim': 64,
-    'batch_size': 7,                        # 16
+    'batch_size': 64,                        # 16
     'loss': 'squared_error',
     'decay_after': 20,
     'batches_per_epoch': 200,               # 200
@@ -72,7 +72,7 @@ parser.add_argument('--batch-size', type=int, default=options['batch_size'], met
 parser.add_argument('--lr', type=float, default=1e-3, metavar='LR')                 # 1e-3
 parser.add_argument('--epochs', type=int, default=100, metavar='N',               # 100
                     help='number of epochs to train (default: 14)')
-parser.add_argument('--num_of_train_frames', type=int, default=10, metavar='N',               # 100
+parser.add_argument('--num_of_train_frames', type=int, default=15693, metavar='N',               # 100
                     help='number of frames used for training (default: 10)')
 args = parser.parse_args()
 
@@ -207,9 +207,11 @@ def train(args, model, dh, optimizer, epoch, input_seqlen, writer):
     losses = []
     torch.set_printoptions(threshold=10_000)
 
-    for batch_idx in range(0, options['batches_per_epoch']):
+    for idx in range(0, args.num_of_train_frames-options['batch_size']-4, options['batch_size']): # options['batches_per_epoch']
+        test = options['batch_size']
+        ind = range(idx,idx+options['batch_size'],1)
 
-        batch = dh.GetBatch()  # generate data on the fly
+        batch = dh.GetBatch(ind=ind)  # batchsize x num_channels x width x height x sequence_length
         batch_input = batch[..., :input_seqlen].transpose(0, 4, 2, 3, 1).squeeze(axis=4)  # first frames
         batch_target = batch[..., input_seqlen:].transpose(0, 4, 2, 3, 1).squeeze(axis=4)  # last frame
         batch_input = torch.tensor(batch_input)
@@ -222,26 +224,27 @@ def train(args, model, dh, optimizer, epoch, input_seqlen, writer):
         target = target.double()
         mse = nn.MSELoss(reduction='sum')
         last_input_rep = data[:,2:3,:,:].repeat(1,3,1,1)
-        loss = (mse(outputs, target) - 0.5*mse(last_input_rep, target))/options['modelOptions']['target_seqlen'] / options['batch_size']
+        loss = (mse(outputs, target))/options['modelOptions']['target_seqlen'] / options['batch_size'] #- 0.5*mse(last_input_rep, target)
 
         losses.append(loss)
         loss.backward()
         optimizer.step()
 
-        if batch_idx % args.log_interval == 0:
+        if idx % args.log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]'.format(
-                epoch, batch_idx, options['batches_per_epoch'],
-                100. * batch_idx / options['batches_per_epoch']))
+                epoch, idx, args.num_of_train_frames,
+                100. * idx / args.num_of_train_frames))
 
-    all_losses = sum(losses)/len(losses)
-    writer.add_scalar('training_loss', loss.item(), epoch)
-    print('Train Epoch: {} \t Average Loss: {:.6f}'.format(epoch, all_losses))
+    # all_losses = sum(losses)/len(losses)
+    writer.add_scalar('training_loss', loss, epoch)
+    print('Train Epoch: {} \t Average Loss: {:.6f}'.format(epoch, loss))
 
 
-def test(model_file_name, model, device, dh_test, input_seqlen, writer):
-    #model = Net(batch_size=options['batch_size'])
-    #model.load_state_dict(torch.load(model_file_name))
-    #model.to(device)
+def test(model, device, dh_test, input_seqlen, writer, model_file_name=None):
+    if not model_file_name==None:
+        model = Net(batch_size=options['batch_size'])
+        model.load_state_dict(torch.load(model_file_name))
+        model.to(device)
     model.eval()
     with torch.no_grad():
         batch = dh_test.GetBatch()
@@ -355,7 +358,7 @@ def main():
 
     model = Net(batch_size=options['batch_size'])
     model = model.to(device)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-3)
 
     scheduler = StepLR(optimizer, step_size=options['decay_after'], gamma=args.gamma)
     starttime = time.process_time()
@@ -378,7 +381,7 @@ def main():
 
 
     model_file_name = "highway_model.pt, epoch: 100"
-    test(model_file_name, model, device, dh_test, input_seqlen, writer)
+    test(model, device, dh_test, input_seqlen, writer, model_file_name)
 
 if __name__ == '__main__':
    main()

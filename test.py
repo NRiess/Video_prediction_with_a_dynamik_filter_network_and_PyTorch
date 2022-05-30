@@ -77,4 +77,4 @@ dh_test = dataset.DataHandler(**options['datasetOptions'])
 
 
 writer = SummaryWriter('runs')
-test(model, device, dh_test, input_seqlen, writer)
+test(model, device, dh_test, input_seqlen, writer, "/home/rns4fe/Documents/code-for-github2/dfn_pytorch/highway_model.pt, epoch: 100")
