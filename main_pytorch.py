@@ -1,6 +1,5 @@
 
 import importlib
-from utils.helperFunctions_pytorch import *
 import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 import torch
@@ -12,6 +11,8 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib import pyplot as plt
 from layers.dynamic_filter_layer_pytorch import DynamicFilterLayer
+import os
+import sys
 
 options = {
     # global setup settings, and checkpoints
@@ -357,6 +358,7 @@ def main():
     input_seqlen = options['modelOptions']['input_seqlen']
 
     model = Net(batch_size=options['batch_size'])
+    model.load_state_dict(torch.load(os.path.dirname(sys.modules['__main__'].__file__)+'/Checkpoints/highway_model.pt, epoch: 90'))
     model = model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-3)
 
@@ -364,7 +366,7 @@ def main():
     starttime = time.process_time()
 
 
-    for epoch in range(1, 102): #args.epochs + 1):
+    for epoch in range(91, 501): #args.epochs + 1):
         train(args, model, dh_train, optimizer, epoch, input_seqlen, writer)
 
         time_delta = time.process_time() - starttime
@@ -380,7 +382,7 @@ def main():
             torch.save(model.state_dict(), "highway_model.pt, epoch: {}".format(epoch))
 
 
-    model_file_name = "Checkpoints/highway_model.pt, epoch: 100"
+    # model_file_name = "Checkpoints/highway_model.pt, epoch: 100"
     test(model, device, dh_test, input_seqlen, writer, model_file_name)
 
 if __name__ == '__main__':

@@ -1,8 +1,6 @@
 __all__ = ["DynamicFilterLayer"]
 import numpy as np
-from collections import OrderedDict
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
 import subprocess as sp
@@ -37,19 +35,6 @@ def DynamicFilterLayer(incomings, filter_size, pad=0, stride=1, flip_filters=Fal
     output = input_localexpanded * filters
 
 
-    # torch.set_printoptions(precision=0, threshold=100000000, linewidth=300)
-    # filter_batch = filters[0,:,:,:]
-    # non_zero_indices3 = (filter_batch == 1).nonzero(as_tuple=True)
-
-    """
-    from matplotlib import pyplot as plt
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    test = filters[0,:,:,:].cpu().numpy()
-    z, x, y = test.nonzero()
-    ax.scatter(x, y, z, c=z, alpha=1)
-    plt.show()
-    """
 
     output = torch.sum(output, dim=1, keepdim=True)
     return output
