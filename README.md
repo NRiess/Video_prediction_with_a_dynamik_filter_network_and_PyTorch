@@ -35,8 +35,11 @@ The code has been tested with Anaconda (Python 3.7.12), PyTorch 1.7.0 and CUDA
 Please run the provided conda environment setup file:
 
   ```Shell
-  conda env create -f environment.yml
-  conda activate dfn-pytorch
+conda create -n dfn python=3.7
+conda activate dfn
+pip install numpy==1.21.6
+pip install matplotlib==3.5.2
+conda install pytorch==1.10.0 torchvision==0.8.2 cudatoolkit=11.4 -c pytorch
   ```
 
 ## Install dataset

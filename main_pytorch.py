@@ -29,7 +29,7 @@ options = {
     'batch_size': 64,                        # 16
     'loss': 'squared_error',
     'decay_after': 20,
-    'batches_per_epoch': 200,               # 200
+    'batches_per_epoch': 400,               # 200
     'save_after': 10
 }
 
@@ -70,7 +70,7 @@ parser.add_argument('--save-model', action='store_true', default=True,
 parser.add_argument('--batch-size', type=int, default=options['batch_size'], metavar='N',
                     help='input batch size for training (default: 64)')
 parser.add_argument('--lr', type=float, default=1e-3, metavar='LR')                 # 1e-3
-parser.add_argument('--epochs', type=int, default=100, metavar='N',               # 100
+parser.add_argument('--epochs', type=int, default=500, metavar='N',               # 100
                     help='number of epochs to train (default: 14)')
 parser.add_argument('--num_of_train_frames', type=int, default=15693, metavar='N',               # 100
                     help='number of frames used for training (default: 10)')
@@ -380,7 +380,7 @@ def main():
             torch.save(model.state_dict(), "highway_model.pt, epoch: {}".format(epoch))
 
 
-    model_file_name = "highway_model.pt, epoch: 100"
+    model_file_name = "Checkpoints/highway_model.pt, epoch: 100"
     test(model, device, dh_test, input_seqlen, writer, model_file_name)
 
 if __name__ == '__main__':
