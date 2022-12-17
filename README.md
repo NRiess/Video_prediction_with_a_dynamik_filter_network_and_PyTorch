@@ -2,8 +2,7 @@
 
 This repository contains a reimplementation of the [code](https://github.com/dbbert/dfn) 
 from Bert De Brabandere.
-Bert De Brabandere reproduced the experiments of [Dynamic Filter Networks]
-(https://arxiv.org/pdf/1605.09673v2.pdf), a NIPS 2016 
+Bert De Brabandere reproduced the experiments of [Dynamic Filter Networks](https://arxiv.org/pdf/1605.09673v2.pdf), a NIPS 2016 
 paper by Bert De Brabandere*, Xu Jia*, Tinne Tuytelaars and Luc Van Gool (* Bert and 
 Xu contributed equally).
 
